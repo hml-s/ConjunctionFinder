@@ -253,9 +253,11 @@ class MainWindow(tk.Frame):
                 and self.is_conjunction(patterns, float(selections["orb"][0]))):
 
                 date_str = self.reformat_date(date)
-                self.text.insert("end", f"Date: {date_str}\n")
-                self.text.insert("end", f"Positions: {self.reformat_patterns(patterns)}\n\n")
-                self.tag_configure(index)
+                pos_str = self.reformat_patterns(patterns)
+
+                line_start = self.text.index("end")
+                self.text.insert("end", f"Date: {date_str}, Positions: {pos_str}\n\n")
+
                 index += 3
                 self.text.see("end")        # Scroll automatisch naar beneden
                 self.text.update()
