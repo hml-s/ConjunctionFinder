@@ -1,12 +1,21 @@
 # -*- coding: utf-8 -*-
 
+import os
 from .constants import PLANETS
-from .modules import dt, os, swe
+from .modules import dt, os as os_module, swe
 from .utilities import convert_degree, reverse_convert_degree
 
+# ====================== EPHEMERIS PATH CONFIG ======================
+# Relatief binnen het project: ConjunctionFinder/sweph/ephe
+ephe_path = os.path.abspath(os.path.join(os.getcwd(), "sweph", "ephe"))
 
-swe.set_ephe_path(os.path.join(os.getcwd(), "Eph"))
+# Zorg voor forward slashes (beter voor Swiss Ephemeris op alle OS)
+ephe_path_unix = ephe_path.replace("\\", "/")
 
+# Meest betrouwbare methode cross-platform
+os.environ["SE_EPHE_PATH"] = ephe_path_unix
+swe.set_ephe_path(ephe_path_unix)
+# ==================================================================
 
 class Zodiac:
     def __init__(self, year, month, day):
