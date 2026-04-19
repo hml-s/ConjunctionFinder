@@ -225,49 +225,50 @@ class MainWindow(tk.Frame):
         self.text["state"] = "normal"
         self.text.delete("1.0", "end")
         index = 1
-        for date in self.get_dates(
-            *map(int, selections["year_range"].values())
-        ):
+
+        last_year = None
+
+        # Eerste melding zodat je ziet dat het echt is gestart
+        print(f"\n=== ZOEKEN GESTART ===")
+        print(f"Planeten: {', '.join(selections['planets'])} | Orb: {selections['orb'][0]}°")
+
+        for date in self.get_dates(*map(int, selections["year_range"].values())):
+            if not self.start:
+                print("\nZoeken gestopt door gebruiker.")
+                break
+
+            year = date[0]
+
+            # Update huidig jaar in dezelfde regel
+            if year != last_year:
+                print(f"\rHuidig jaar: {year}          ", end="")
+                last_year = year
+
             try:
                 patterns = Zodiac(*date).patterns(selections["planets"])
             except swe.Error:
-                MsgBox(
-                    title="Warning",
-                    message=(
-                        "Chiron's ephemeris is limited between\n"
-                        "650 and 4650."
-                    ),
-                    level="warning"
-                )
-                return
-            if (
-                all(p[1] in selections["signs"] for p in patterns)
-                and
-                self.is_conjunction(patterns, float(selections["orb"][0]))
-            ):
-                try:
-                    self.text["state"] = "normal"
-                    self.text.insert(
-                        "end", 
-                        f"Date: {self.reformat_date(date)}\n"
-                    )
-                    self.text.insert(
-                        "end", 
-                        f"Positions: {self.reformat_patterns(patterns)}\n\n"
-                    )
-                    self.tag_configure(index=index)
-                    index += 3
-                    self.text["state"] = "disabled"
-                    self.text.update()
-                except tk.TclError:
-                    return
-            if not self.start:
-                return
+                continue
+
+            if (all(p[1] in selections["signs"] for p in patterns)
+                and self.is_conjunction(patterns, float(selections["orb"][0]))):
+
+                date_str = self.reformat_date(date)
+                self.text.insert("end", f"Date: {date_str}\n")
+                self.text.insert("end", f"Positions: {self.reformat_patterns(patterns)}\n\n")
+                self.tag_configure(index)
+                index += 3
+                self.text.see("end")        # Scroll automatisch naar beneden
+                self.text.update()
+
+        # Einde van de zoekopdracht
+        print("\n\n=== ZOEKEN VOLTOOID ===")
+        self.text["state"] = "disabled"
+
         self.master.after(
             0,
             lambda: MsgBox(
                 title="Info",
-                message=f"Search is complete.",
+                message="Search is complete.",
                 level="info"
             )
         )
