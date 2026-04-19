@@ -241,9 +241,7 @@ class MainWindow(tk.Frame):
                 )
                 return
             if (
-                self.is_all_signs_same(patterns)
-                and
-                self.is_in_signs(patterns, selections["signs"])
+                all(p[1] in selections["signs"] for p in patterns)
                 and
                 self.is_conjunction(patterns, float(selections["orb"][0]))
             ):
