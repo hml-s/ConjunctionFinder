@@ -229,19 +229,19 @@ class MainWindow(tk.Frame):
         last_year = None
 
         # Eerste melding zodat je ziet dat het echt is gestart
-        print(f"\n=== ZOEKEN GESTART ===")
-        print(f"Planeten: {', '.join(selections['planets'])} | Orb: {selections['orb'][0]}°")
+        print(f"\n=== SEARCH STARTED ===")
+        print(f"Planets: {', '.join(selections['planets'])} | Orb: {selections['orb'][0]}°")
 
         for date in self.get_dates(*map(int, selections["year_range"].values())):
             if not self.start:
-                print("\nZoeken gestopt door gebruiker.")
+                print("\nSearch stopped by user.")
                 break
 
             year = date[0]
 
-            # Update huidig jaar in dezelfde regel
+            # Show current year on the same line (progress feedback)
             if year != last_year:
-                print(f"\rHuidig jaar: {year}          ", end="")
+                print(f"\rSearching year: {year}          ", end="")
                 last_year = year
 
             try:
@@ -259,11 +259,11 @@ class MainWindow(tk.Frame):
                 self.text.insert("end", f"Date: {date_str}, Positions: {pos_str}\n\n")
 
                 index += 3
-                self.text.see("end")        # Scroll automatisch naar beneden
+                self.text.see("end")        # Auto-scroll to the bottom
                 self.text.update()
 
         # Einde van de zoekopdracht
-        print("\n\n=== ZOEKEN VOLTOOID ===")
+        print("\n\n=== SEARCH COMPLETED ===")
         self.text["state"] = "disabled"
 
         self.master.after(
